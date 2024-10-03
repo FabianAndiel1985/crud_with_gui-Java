@@ -38,79 +38,90 @@ public class Main {
 		b.setBounds(130,100,100, 40);  
 		frame.add(b);
 		
-
 		JFrame frameWithForm = new JFrame();
 		frameWithForm.setSize(200,470);
 		frameWithForm.setResizable(false);
 		frameWithForm.setLayout(new FlowLayout());
 		
+		b.addActionListener((e)->{
+			frame.setVisible(false);
+			frameWithForm.setVisible(true);
+		});
+		
+		
+		
+		
+		JPanel mainPanel = createMainPanel( frame, frameWithForm);
+			
+		frameWithForm.getContentPane().add(mainPanel);
+		
+		
+		String query = "SELECT * FROM person";
+		
+		ArrayList<ArrayList<String>> persons = new ArrayList<>();
+		
+		try (var conn = DBconnection.getConnection();
+				Statement statement = conn.createStatement()) {
+			try (ResultSet rs = statement.executeQuery(query)) {
+				while (rs.next()) {					
+					persons.add(createPerson(rs));
+				}
+			};
+		}
+		catch(Exception e) {	
+		}
+		
+	        String[] columnNames = { "Firstname", "Lastname","Street","Housenumber","Doornumber","Zip","City","Email"};
+	        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0){
+	            @Override
+	            public boolean isCellEditable(int row, int column) {
+	                return false;
+	            }
+	        };
+
+	        JTable table = new JTable(tableModel);
+
+	        JScrollPane scrollPane = new JScrollPane(table);
+	        frame.add(scrollPane);
+	        
+	        addRecordsIntoTable(persons,tableModel);
+	        
+	        frame.setVisible(true);
+	}
+	
+	
+	
+	
+	
+	private static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm ) {
 		
 		JPanel mainPanel = new JPanel();
 	 
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-	    mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20)); // 20px padding on all sides
-	     
-	    
-		JLabel firstNameLabel = new JLabel("Firstname");
-		firstNameLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font to bold and size to 24
+	    mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 		
-		JTextField firstNameTextField = new JTextField();
-		firstNameTextField.setPreferredSize(new Dimension(60,20));
+		JLabel firstNameLabel = createLabel("Firstname");
+	    JLabel lastNameLabel = createLabel("Lastnname");
+        JLabel streetLabel = createLabel("Street");
+        JLabel housenumberLabel = createLabel("Housenumber");
+        JLabel doornumberLabel = createLabel("Doornumber");
+        JLabel zipLabel = createLabel("Zip");
+        JLabel cityLabel = createLabel("City");
+        JLabel emailLabel = createLabel("Email");
         
-        JLabel lastNameLabel = new JLabel("Lastnname");
-        lastNameLabel.setBounds(50, 50, 300, 50); // Set the position and size of the label
-        lastNameLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font to bold and size to 24
-		
-        JTextField lastNameTextField = new JTextField();
-        lastNameTextField.setPreferredSize(new Dimension(60,20));
-        
-        JLabel streetLabel = new JLabel("Street");
-        streetLabel.setBounds(50, 50, 300, 50); // Set the position and size of the label
-        streetLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font to bold and size to 24
-		
-        JTextField streetTextField = new JTextField();
-        streetTextField.setPreferredSize(new Dimension(60,20));
-        
-        JLabel housenumberLabel = new JLabel("Housenumber");
-        housenumberLabel.setBounds(50, 50, 300, 50); // Set the position and size of the label
-        housenumberLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font to bold and size to 24
-		
-        JTextField housenumberField = new JTextField();
-        housenumberField.setPreferredSize(new Dimension(60,20));
-        
-        JLabel doornumberLabel = new JLabel("Doornumber");
-        doornumberLabel.setBounds(50, 50, 300, 50); // Set the position and size of the label
-        doornumberLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font to bold and size to 24
-		
-        JTextField doornumberField = new JTextField();
-        doornumberField.setPreferredSize(new Dimension(60,20));
-        
-        JLabel zipLabel = new JLabel("Zip");
-        zipLabel.setBounds(50, 50, 300, 50); // Set the position and size of the label
-        zipLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font to bold and size to 24
-		
-        JTextField zipField = new JTextField();
-        zipField.setPreferredSize(new Dimension(60,20));
-        
-        JLabel cityLabel = new JLabel("City");
-        cityLabel.setBounds(50, 50, 300, 50); // Set the position and size of the label
-        cityLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font to bold and size to 24
-		
-        JTextField cityField = new JTextField();
-        cityField.setPreferredSize(new Dimension(60,20));
-        
-        JLabel emailLabel = new JLabel("Email");
-        emailLabel.setBounds(50, 50, 300, 50); // Set the position and size of the label
-        emailLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font to bold and size to 24
-		
-        JTextField emailField = new JTextField();
-        emailField.setPreferredSize(new Dimension(60,20));
+		JTextField firstNameTextField = createTextField();
+        JTextField lastNameTextField = createTextField();
+        JTextField streetTextField = createTextField();
+        JTextField housenumberField = createTextField();
+        JTextField doornumberField = createTextField();
+        JTextField zipField = createTextField();
+        JTextField cityField = createTextField();
+        JTextField emailField = createTextField();
         
         JPanel submitButtonPanel = new JPanel();
-   	 
+      	 
         submitButtonPanel.setLayout(new BoxLayout(submitButtonPanel, BoxLayout.Y_AXIS));
         submitButtonPanel.setBorder(new EmptyBorder(20, 20, 20, 20)); // 20px padding on all sides
-        
         JButton submitButton = new JButton("Eintragen");
         submitButtonPanel.add(submitButton);
         
@@ -122,8 +133,6 @@ public class Main {
         JButton backButton = new JButton("Zurück");
         backButtonPanel.add(backButton);
         
-        
-      
 		mainPanel.add(firstNameLabel);
 		mainPanel.add(firstNameTextField);
 		mainPanel.add(lastNameLabel);
@@ -143,16 +152,7 @@ public class Main {
 		mainPanel.add(submitButtonPanel);
 		mainPanel.add(backButtonPanel);
 		
-		
-		
-		frameWithForm.getContentPane().add(mainPanel);
-		
-		
-		b.addActionListener((e)->{
-			frame.setVisible(false);
-			frameWithForm.setVisible(true);
-		});
-		
+	
 		backButton.addActionListener((e)->{
 			frameWithForm.setVisible(false);
 			frame.setVisible(true);
@@ -190,48 +190,29 @@ public class Main {
 				e1.printStackTrace();
 			}
 			
-			})
+			});
 		
-		;
-		
-	
-		
-		String query = "SELECT * FROM person";
-		
-		ArrayList<ArrayList<String>> persons = new ArrayList<>();
-		
-		try (var conn = DBconnection.getConnection();
-				Statement statement = conn.createStatement()) {
-			try (ResultSet rs = statement.executeQuery(query)) {
-				while (rs.next()) {					
-					persons.add(createPerson(rs));
-				}
-			};
-		}
-		catch(Exception e) {	
-		}
-		
-	        String[] columnNames = { "Firstname", "Lastname","Street","Housenumber","Doornumber","Zip","City","Email"};
-	        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0){
-	            @Override
-	            public boolean isCellEditable(int row, int column) {
-	                return false;
-	            }
-	        };
-
-	        JTable table = new JTable(tableModel);
-
-	        JScrollPane scrollPane = new JScrollPane(table);
-	        frame.add(scrollPane);
-	        
-	        addRecordsIntoTable(persons,tableModel);
-	        
-	        frame.setVisible(true);
-		
+		return mainPanel;
 	}
 	
 	
 	
+	
+	
+	
+	private static JTextField createTextField(){
+		JTextField textField = new JTextField();
+		textField.setPreferredSize(new Dimension(60,20));
+		return textField;
+	}
+	
+	
+	private static JLabel createLabel (String name) {
+		 JLabel label = new JLabel(name);
+	     label.setBounds(50, 50, 300, 50);
+	     label.setFont(new Font("Arial", Font.PLAIN, 14)); 
+	     return label;
+	}
 	
 	private static void addRecordsIntoTable(ArrayList<ArrayList<String>> persons,DefaultTableModel tableModel) {
 		int index = 0;
