@@ -4,6 +4,7 @@ package crudWithGui;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -204,16 +205,45 @@ public class Main {
 			String city = cityField.getText();
 			String email = emailField.getText();
 			
-			Person tempPerson = new Person(firstname,lastname,street,housenumber,doornumber,zip,city,email);
 			
 			
 			if(person.isPresent()) {
+				
+				Person tempPerson = new Person(firstname,lastname,street,housenumber,doornumber,zip,city,email);
 				
 					if(person.get().continueEqualityCheck(tempPerson)) {
 						ArrayList<String> differentFields = person.get().getDifferentFields(tempPerson); 
 						if(differentFields.size()>0 ) {
 							String query = createUpdateQuery(differentFields);
+//							 System.out.println(query);
+//							 System.out.println(person.get().getId());
 							
+							System.out.println("Size of different fields " + differentFields.size());
+							try (var conn = DBconnection.getConnection();
+									PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+										
+									for( int i= 1;i <= differentFields.size(); i++) {
+										
+										if(differentFields.size() == 1) {
+											preparedStatement.setString(i, getFieldValue(tempPerson, differentFields.get(i-1)));	
+											preparedStatement.setInt(i+1, person.get().getId()); 
+										}
+										if (i != differentFields.size() && differentFields.size() > 1  ) {
+											preparedStatement.setString(i, getFieldValue(tempPerson, differentFields.get(i-1)));	
+										}
+										if( i == differentFields.size() && differentFields.size() > 1 ) {
+											preparedStatement.setString(i, getFieldValue(tempPerson, differentFields.get(i-1)));
+											preparedStatement.setInt(i+1, person.get().getId());
+										}
+									
+									}
+											
+									int rows = preparedStatement.executeUpdate();
+									
+								} catch (SQLException | NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
 						}
 					}
 						
@@ -248,11 +278,21 @@ public class Main {
 	
 	
 
+	private static String getFieldValue(Person person,String fieldName) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		   Field field = Person.class.getDeclaredField(fieldName);
+           field.setAccessible(true);  // Bypass private modifier
+           return (String) field.get(person);
+	}
+
+
+
+
+
 	private static String createUpdateQuery(ArrayList<String> differentFields) {
 		
-	//"UPDATE Messages SET description = ?, author = ? WHERE id = ? AND seq_num = ?");
 	
-		String basicStatement = "UPDATE Messages SET ";
+	
+		String basicStatement = "UPDATE person SET ";
 		String endBasicStatement = " WHERE id = ?";
 		
 		for( int i=0; i< differentFields.size(); i++) {
