@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -24,11 +25,12 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 
 
 public class Main {
-
+	
 	public static void main(String[] args) {
 		
 		JFrame frame=new JFrame();
@@ -38,6 +40,10 @@ public class Main {
 		b.setBounds(130,100,100, 40);  
 		frame.add(b);
 		
+		JButton updateButton=new JButton("Update");
+		b.setBounds(130,100,100, 40);  
+		frame.add(updateButton);
+		
 		JFrame frameWithForm = new JFrame();
 		frameWithForm.setSize(200,470);
 		frameWithForm.setResizable(false);
@@ -45,15 +51,36 @@ public class Main {
 		
 		b.addActionListener((e)->{
 			frame.setVisible(false);
+			JPanel mainPanel = createMainPanel( frame, frameWithForm,Optional.ofNullable(null));
+			frameWithForm.getContentPane().add(mainPanel);
 			frameWithForm.setVisible(true);
 		});
 		
+		String[] columnNames = {"id","Firstname", "Lastname","Street","Housenumber","Doornumber","Zip","City","Email"};
+	        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0){
+	            @Override
+	            public boolean isCellEditable(int row, int column) {
+	                return false;
+	            }
+	        };
+
+	    JTable table = new JTable(tableModel);
 		
-		
-		
-		JPanel mainPanel = createMainPanel( frame, frameWithForm);
-			
-		frameWithForm.getContentPane().add(mainPanel);
+		updateButton.addActionListener(
+				(e)->{
+					int selectedRow = table.getSelectedRow();
+					if(selectedRow != -1) {
+						frame.setVisible(false);
+						String id = table.getModel().getValueAt(selectedRow, 0).toString();
+						
+						Person createdPerson = createPersonFromRow(table, selectedRow);
+						
+						JPanel mainPanel = createMainPanel( frame, frameWithForm,Optional.ofNullable(createdPerson));
+						frameWithForm.getContentPane().add(mainPanel);
+						frameWithForm.setVisible(true);	
+					}
+				}
+		);
 		
 		
 		String query = "SELECT * FROM person";
@@ -71,15 +98,8 @@ public class Main {
 		catch(Exception e) {	
 		}
 		
-	        String[] columnNames = { "Firstname", "Lastname","Street","Housenumber","Doornumber","Zip","City","Email"};
-	        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0){
-	            @Override
-	            public boolean isCellEditable(int row, int column) {
-	                return false;
-	            }
-	        };
-
-	        JTable table = new JTable(tableModel);
+	        TableColumn idColumn = table.getColumnModel().getColumn(0);
+	        table.getColumnModel().removeColumn(idColumn);
 
 	        JScrollPane scrollPane = new JScrollPane(table);
 	        frame.add(scrollPane);
@@ -93,7 +113,7 @@ public class Main {
 	
 	
 	
-	private static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm ) {
+	private static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm, Optional<Person> person) {
 		
 		JPanel mainPanel = new JPanel();
 	 
@@ -117,6 +137,20 @@ public class Main {
         JTextField zipField = createTextField();
         JTextField cityField = createTextField();
         JTextField emailField = createTextField();
+        
+        if (person.isPresent()) {	
+        	Person personToUpdate = person.get();
+        	firstNameTextField.setText(personToUpdate.getFirst_name());
+        	lastNameTextField.setText(personToUpdate.getLast_name());
+        	streetTextField.setText(personToUpdate.getStreet());
+        	housenumberField.setText(personToUpdate.getHousenumber());
+        	doornumberField.setText(personToUpdate.getDoornumber());
+        	zipField.setText(personToUpdate.getZip());
+        	cityField.setText(personToUpdate.getCity());
+        	emailField.setText(personToUpdate.getEmail());
+        }
+        
+        
         
         JPanel submitButtonPanel = new JPanel();
       	 
@@ -158,6 +192,7 @@ public class Main {
 			frame.setVisible(true);
 		});
 		
+		
 		submitButton.addActionListener((e)->{
 			
 			String firstname = firstNameTextField.getText();
@@ -169,43 +204,67 @@ public class Main {
 			String city = cityField.getText();
 			String email = emailField.getText();
 			
-			String query = "INSERT INTO person (first_name, last_name, street, housenumber, doornumber, zip, city, email) VALUES (?, ?, ?, ?,?,?,?,?)";
+			Person tempPerson = new Person(firstname,lastname,street,housenumber,doornumber,zip,city,email);
 			
-			try (var conn = DBconnection.getConnection();
-				PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-				preparedStatement.setString(1, firstname);
-				preparedStatement.setString(2, lastname);
-				preparedStatement.setString(3, street);
-				preparedStatement.setString(4, housenumber);
-				preparedStatement.setString(5, doornumber);
-				preparedStatement.setString(6, zip);
-				preparedStatement.setString(7, city);
-				preparedStatement.setString(8, email);
 			
-				int rows = preparedStatement.executeUpdate();
-				System.out.println(rows);
+			if(person.isPresent()) {
+				System.out.println("Person is present");
+					if(person.get().continueEqualityCheck(tempPerson)) {
+						System.out.println("Contiue equality checkl");	
+					}
+			}
+			
+			else {
+				String query = "INSERT INTO person (first_name, last_name, street, housenumber, doornumber, zip, city, email) VALUES (?, ?, ?, ?,?,?,?,?)";
+			
+				try (var conn = DBconnection.getConnection();
+					PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+					preparedStatement.setString(1, firstname);
+					preparedStatement.setString(2, lastname);
+					preparedStatement.setString(3, street);
+					preparedStatement.setString(4, housenumber);
+					preparedStatement.setString(5, doornumber);
+					preparedStatement.setString(6, zip);
+					preparedStatement.setString(7, city);
+					preparedStatement.setString(8, email);
 				
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+					int rows = preparedStatement.executeUpdate();
+					
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			
 			});
+		
+		
+		
 		
 		return mainPanel;
 	}
 	
 	
-	
-	
-	
-	
+
 	private static JTextField createTextField(){
 		JTextField textField = new JTextField();
 		textField.setPreferredSize(new Dimension(60,20));
 		return textField;
 	}
 	
+	private static Person createPersonFromRow(JTable table,int selectedRow){
+		Integer id = Integer.parseInt(table.getModel().getValueAt(selectedRow, 0).toString());
+		String firstName = table.getValueAt(selectedRow, 0).toString();
+		String lastName = table.getValueAt(selectedRow, 1).toString();
+		String street = table.getValueAt(selectedRow, 2).toString();
+		String housenumber = table.getValueAt(selectedRow, 3).toString();
+		String doornumber = table.getValueAt(selectedRow, 4).toString();
+		String zip = table.getValueAt(selectedRow, 5).toString();
+		String city = table.getValueAt(selectedRow, 6).toString();
+		String email = table.getValueAt(selectedRow, 7).toString();
+		
+		return new Person(id,firstName,lastName,street,housenumber,doornumber,zip,city,email);
+	}
 	
 	private static JLabel createLabel (String name) {
 		 JLabel label = new JLabel(name);
@@ -226,6 +285,7 @@ public class Main {
 	private static ArrayList<String> createPerson(ResultSet rs) throws SQLException {
 		
 		ArrayList<String> person = new ArrayList<>();
+		person.add(rs.getString("id"));
 		person.add(rs.getString("first_name"));
 		person.add(rs.getString("last_name"));
 		person.add(rs.getString("street"));

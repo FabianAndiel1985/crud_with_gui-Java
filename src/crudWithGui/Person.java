@@ -2,6 +2,9 @@ package crudWithGui;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Objects;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -34,5 +37,58 @@ public class Person {
 		this.city = city;
 		this.email = email;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(city, doornumber, email, first_name, housenumber, last_name, street, zip);
+	}
+	
+	
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		return true;
+	}
+	
+	
+	public boolean continueEqualityCheck(Object obj) {
+		if (this == obj)
+			return false;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		return true;
+	}
+	
+	
+	
+
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj)
+//			return true;
+//		if (obj == null)
+//			return false;
+//		if (getClass() != obj.getClass())
+//			return false;
+//		Person other = (Person) obj;
+//		
+//		//add list with not equals
+//		//step by step		
+//		
+//		return Objects.equals(city, other.city) && Objects.equals(doornumber, other.doornumber)
+//				&& Objects.equals(email, other.email) && Objects.equals(first_name, other.first_name)
+//				&& Objects.equals(housenumber, other.housenumber) && Objects.equals(last_name, other.last_name)
+//				&& Objects.equals(street, other.street) && Objects.equals(zip, other.zip);
+//	}
+//	
+	
 	
 }
