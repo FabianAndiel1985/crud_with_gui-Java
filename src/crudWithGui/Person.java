@@ -3,6 +3,7 @@ package crudWithGui;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import lombok.AccessLevel;
@@ -65,6 +66,44 @@ public class Person {
 		if (getClass() != obj.getClass())
 			return false;
 		return true;
+	}
+	
+	
+	
+	
+	
+	public ArrayList<String> getDifferentFields(Person person) {
+		ArrayList<String> differentFields = new ArrayList();
+		if(!(Objects.equals(city, person.city))) {
+			differentFields.add("city");
+		}
+		if(!(Objects.equals(doornumber, person.doornumber))) {
+			differentFields.add("doornumber");
+		}
+		if(!(Objects.equals(email, person.email))) {
+			differentFields.add("email");
+		}
+		if(!(Objects.equals(first_name, person.first_name))) {
+			differentFields.add("first_name");
+		}
+		if(!(Objects.equals(last_name, person.last_name))) {
+			System.out.println(last_name);
+			System.out.println(person.last_name);
+			differentFields.add("last_name");
+		}
+		if(!(Objects.equals(housenumber, person.housenumber))) {
+			System.out.println(housenumber);
+			System.out.println(person.housenumber);
+			differentFields.add("housenumber");
+		}
+		if(!(Objects.equals(street, person.street))) {
+			differentFields.add("street");
+		}
+		if(!(Objects.equals(zip, person.zip))) {
+			differentFields.add("zip");
+		}
+		
+		return differentFields;
 	}
 	
 	

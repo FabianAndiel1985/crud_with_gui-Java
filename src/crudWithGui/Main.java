@@ -196,7 +196,7 @@ public class Main {
 		submitButton.addActionListener((e)->{
 			
 			String firstname = firstNameTextField.getText();
-			String lastname = firstNameTextField.getText();
+			String lastname = lastNameTextField.getText();
 			String street = streetTextField.getText();
 			String housenumber = housenumberField.getText();
 			String doornumber = doornumberField.getText();
@@ -208,10 +208,15 @@ public class Main {
 			
 			
 			if(person.isPresent()) {
-				System.out.println("Person is present");
+				
 					if(person.get().continueEqualityCheck(tempPerson)) {
-						System.out.println("Contiue equality checkl");	
+						ArrayList<String> differentFields = person.get().getDifferentFields(tempPerson); 
+						if(differentFields.size()>0 ) {
+							String query = createUpdateQuery(differentFields);
+							
+						}
 					}
+						
 			}
 			
 			else {
@@ -238,13 +243,31 @@ public class Main {
 			
 			});
 		
-		
-		
-		
 		return mainPanel;
 	}
 	
 	
+
+	private static String createUpdateQuery(ArrayList<String> differentFields) {
+		
+	//"UPDATE Messages SET description = ?, author = ? WHERE id = ? AND seq_num = ?");
+	
+		String basicStatement = "UPDATE Messages SET ";
+		String endBasicStatement = " WHERE id = ?";
+		
+		for( int i=0; i< differentFields.size(); i++) {
+				basicStatement += differentFields.get(i)+ " = ?";
+				if(i != differentFields.size()-1) {
+					basicStatement += ", ";
+				}
+		}
+		
+		return basicStatement.concat(endBasicStatement);
+	}
+
+
+
+
 
 	private static JTextField createTextField(){
 		JTextField textField = new JTextField();
