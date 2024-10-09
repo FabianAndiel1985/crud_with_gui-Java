@@ -120,10 +120,8 @@ public static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm, Optio
 						ArrayList<String> differentFields = person.get().getDifferentFields(tempPerson); 
 						if(differentFields.size()>0 ) {
 							String query = createUpdateQuery(differentFields);
-//							 System.out.println(query);
-//							 System.out.println(person.get().getId());
+
 							
-							System.out.println("Size of different fields " + differentFields.size());
 							try (var conn = DBconnection.getConnection();
 									PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 										

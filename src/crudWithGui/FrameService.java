@@ -1,5 +1,6 @@
 package crudWithGui;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,5 +34,20 @@ public static void addRecordsIntoTable(ArrayList<ArrayList<String>> persons,Defa
 	index++;
 	}	
 }
+
+
+	public static void deleteSelectedRow (String id) {
+		String query = "DELETE FROM person WHERE id = ?";
+		
+		try (var conn = DBconnection.getConnection();
+				PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+				preparedStatement.setString(1, id);
+				int rows = preparedStatement.executeUpdate();
+				
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		
+	}
 
 }

@@ -46,6 +46,11 @@ public class Main {
 		updateButton.setBounds(130,100,100, 40);  
 		frame.add(updateButton);
 		
+		JButton deleteButton=new JButton("Delete");
+		deleteButton.setBounds(130,100,100, 40);  
+		frame.add(deleteButton);
+		
+		
 		
 		JFrame frameWithForm = new JFrame();
 		frameWithForm.setSize(200,470);
@@ -59,6 +64,10 @@ public class Main {
 			frameWithForm.setVisible(true);
 		});
 		
+		
+		
+		
+		
 		String[] columnNames = {"id","Firstname", "Lastname","Street","Housenumber","Doornumber","Zip","City","Email"};
 	        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0){
 	            @Override
@@ -68,11 +77,20 @@ public class Main {
 	        };
 
 	    JTable table = new JTable(tableModel);
+	    
+	    deleteButton.addActionListener((e)->{
+	    	int selectedRow = table.getSelectedRow();
+	    	if (selectedRow != -1) {
+	    		String id = table.getModel().getValueAt(selectedRow, 0).toString();
+	    		FrameService.deleteSelectedRow(id);
+	    	}
+	    	
+		});
+		
 		
 		updateButton.addActionListener(
 				(e)->{
 					int selectedRow = table.getSelectedRow();
-					System.out.println(selectedRow);
 					if(selectedRow != -1) {
 						frame.setVisible(false);
 						String id = table.getModel().getValueAt(selectedRow, 0).toString();
