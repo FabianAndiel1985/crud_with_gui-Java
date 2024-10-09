@@ -36,21 +36,16 @@ public class Main {
 		
 		JFrame frame=new JFrame();
 		frame.setSize(510,510);
+		frame.setResizable(false);
 		frame.setLayout(new FlowLayout());
 		
-		JButton b=new JButton("Enter new person");
-		b.setBounds(130,100,100, 40);  
-		frame.add(b);
+		JButton b = FrameService.createButton("Enter new person");
+		JButton updateButton = FrameService.createButton("Update");
+		JButton deleteButton = FrameService.createButton("Delete");
 		
-		JButton updateButton=new JButton("Update");
-		updateButton.setBounds(130,100,100, 40);  
+		frame.add(b);  
 		frame.add(updateButton);
-		
-		JButton deleteButton=new JButton("Delete");
-		deleteButton.setBounds(130,100,100, 40);  
 		frame.add(deleteButton);
-		
-		
 		
 		JFrame frameWithForm = new JFrame();
 		frameWithForm.setSize(200,470);

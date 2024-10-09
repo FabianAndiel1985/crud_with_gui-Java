@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.table.DefaultTableModel;
 
 public class FrameService {
@@ -48,6 +49,13 @@ public static void addRecordsIntoTable(ArrayList<ArrayList<String>> persons,Defa
 				e1.printStackTrace();
 			}
 		
+	}
+
+
+	public static JButton createButton(String name) {
+		JButton button=new JButton(name);
+		button.setBounds(130,100,100, 40);  
+		return button;
 	}
 
 }
