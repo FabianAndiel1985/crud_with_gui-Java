@@ -65,9 +65,6 @@ public class Main {
 		});
 		
 		
-		
-		
-		
 		String[] columnNames = {"id","Firstname", "Lastname","Street","Housenumber","Doornumber","Zip","City","Email"};
 	        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0){
 	            @Override
