@@ -69,9 +69,6 @@ public class Person {
 	}
 	
 	
-	
-	
-	
 	public ArrayList<String> getDifferentFields(Person person) {
 		ArrayList<String> differentFields = new ArrayList();
 		
