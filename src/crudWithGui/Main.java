@@ -4,7 +4,15 @@ package crudWithGui;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,10 +50,12 @@ public class Main {
 		JButton b = FrameService.createButton("Enter new person");
 		JButton updateButton = FrameService.createButton("Update");
 		JButton deleteButton = FrameService.createButton("Delete");
+		JButton exportButton = FrameService.createButton("Export as CSV");
 		
 		frame.add(b);  
 		frame.add(updateButton);
 		frame.add(deleteButton);
+		frame.add(exportButton);
 		
 		JFrame frameWithForm = new JFrame();
 		frameWithForm.setSize(200,470);
@@ -79,7 +89,7 @@ public class Main {
 	    	
 		});
 		
-		
+	    
 		updateButton.addActionListener(
 				(e)->{
 					int selectedRow = table.getSelectedRow();
@@ -96,7 +106,6 @@ public class Main {
 				}
 		);
 		
-		
 		String query = "SELECT * FROM person";
 		
 		ArrayList<ArrayList<String>> persons = new ArrayList<>();
@@ -110,7 +119,16 @@ public class Main {
 			};
 		}
 		catch(Exception e) {	
+		
 		}
+		
+		exportButton.addActionListener((e) -> {
+			if(persons.isEmpty()) {
+				return;
+			}
+			FrameService.exportToFile(persons);
+		}
+		);
 		
 	        TableColumn idColumn = table.getColumnModel().getColumn(0);
 	        table.getColumnModel().removeColumn(idColumn);
@@ -121,6 +139,5 @@ public class Main {
 	        FrameService.addRecordsIntoTable(persons,tableModel);
 	        frame.setVisible(true);
 	}
-	
-		
+			
 }

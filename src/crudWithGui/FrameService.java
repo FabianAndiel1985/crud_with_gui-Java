@@ -1,5 +1,11 @@
 package crudWithGui;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,6 +41,39 @@ public static void addRecordsIntoTable(ArrayList<ArrayList<String>> persons,Defa
 	index++;
 	}	
 }
+
+	public static void exportToFile(ArrayList<ArrayList<String>> persons) {
+		//creates the path object representing a path
+		Path folderPath = Paths.get("src/exports");
+		//creates whole path for the file
+		Path pathOfFile = folderPath.resolve("persons.txt");
+		
+		try {
+			if(!Files.exists(folderPath)) {
+			  Files.createDirectory(folderPath);
+			}
+			if(!Files.exists(pathOfFile)) {
+				Files.createFile(pathOfFile);	
+			}
+			Files.write(pathOfFile,toBytes(persons));
+		}
+		catch (Exception e1) {
+			System.out.println(e1.getMessage());
+		}
+	}
+	
+	private static byte[] toBytes(ArrayList<ArrayList<String>> list) throws IOException {
+	        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+
+	        // ObjectOutputStream writes the persons to the Byte Array Output Stream
+	        try (ObjectOutputStream objectStream = new ObjectOutputStream(byteStream)) {
+	            objectStream.writeObject(list); 
+	        }
+	        //muss man so machen weil der byteStream kein Array ist aber man nur zum stream schreiben kann,.
+	        return byteStream.toByteArray();
+	    }
+	
+	
 
 
 	public static void deleteSelectedRow (String id) {
