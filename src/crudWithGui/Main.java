@@ -37,7 +37,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 
-
 public class Main {
 	
 	public static void main(String[] args) {
@@ -57,6 +56,14 @@ public class Main {
 		frame.add(deleteButton);
 		frame.add(exportButton);
 		
+		String[] columnNames = {"id","Firstname", "Lastname","Street","Housenumber","Doornumber","Zip","City","Email"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+		
 		JFrame frameWithForm = new JFrame();
 		frameWithForm.setSize(200,470);
 		frameWithForm.setResizable(false);
@@ -64,20 +71,11 @@ public class Main {
 		
 		b.addActionListener((e)->{
 			frame.setVisible(false);
-			JPanel mainPanel = FrameWithFormService.createMainPanel( frame, frameWithForm,Optional.ofNullable(null));
+			JPanel mainPanel = FrameWithFormService.createMainPanel( frame, frameWithForm,Optional.ofNullable(null), tableModel);
 			frameWithForm.getContentPane().add(mainPanel);
 			frameWithForm.setVisible(true);
 		});
 		
-		
-		String[] columnNames = {"id","Firstname", "Lastname","Street","Housenumber","Doornumber","Zip","City","Email"};
-	        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0){
-	            @Override
-	            public boolean isCellEditable(int row, int column) {
-	                return false;
-	            }
-	        };
-
 	    JTable table = new JTable(tableModel);
 	    
 	    deleteButton.addActionListener((e)->{
@@ -85,8 +83,10 @@ public class Main {
 	    	if (selectedRow != -1) {
 	    		String id = table.getModel().getValueAt(selectedRow, 0).toString();
 	    		FrameService.deleteSelectedRow(id);
+	    		tableModel.setRowCount(0);
+	    		ArrayList<ArrayList<String>> persons =  FrameService.getPersonsFromDataBase();
+				FrameService.addRecordsIntoTable(persons, tableModel);
 	    	}
-	    	
 		});
 		
 	    
@@ -96,30 +96,16 @@ public class Main {
 					if(selectedRow != -1) {
 						frame.setVisible(false);
 						String id = table.getModel().getValueAt(selectedRow, 0).toString();
-						
 						Person createdPerson = FrameWithFormService.createPersonFromRow(table, selectedRow);
-						
-						JPanel mainPanel = FrameWithFormService.createMainPanel( frame, frameWithForm,Optional.ofNullable(createdPerson));
+						JPanel mainPanel = FrameWithFormService.createMainPanel( frame, frameWithForm,Optional.ofNullable(createdPerson),tableModel);
 						frameWithForm.getContentPane().add(mainPanel);
 						frameWithForm.setVisible(true);	
 					}
 				}
 		);
 		
-		String query = "SELECT * FROM person";
 		
-		ArrayList<ArrayList<String>> persons = new ArrayList<>();
-		
-		try (var conn = DBconnection.getConnection();
-				Statement statement = conn.createStatement()) {
-			try (ResultSet rs = statement.executeQuery(query)) {
-				while (rs.next()) {					
-					persons.add(FrameService.createPerson(rs));
-				}
-			};
-		}
-		catch(Exception e) {	
-		}
+		ArrayList<ArrayList<String>> persons = FrameService.getPersonsFromDataBase();
 		
 		exportButton.addActionListener((e) -> {
 			if(persons.isEmpty()) {

@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -17,7 +18,7 @@ import javax.swing.table.DefaultTableModel;
 public class FrameService {
 	
 	
-public static ArrayList<String> createPerson(ResultSet rs) throws SQLException {
+private static ArrayList<String> createPerson(ResultSet rs) throws SQLException {
 		
 		ArrayList<String> person = new ArrayList<>();
 		person.add(rs.getString("id"));
@@ -33,6 +34,25 @@ public static ArrayList<String> createPerson(ResultSet rs) throws SQLException {
 
 	}
 
+
+public static ArrayList<ArrayList<String>> getPersonsFromDataBase () {
+	
+	String query = "SELECT * FROM person";
+	
+	ArrayList<ArrayList<String>> persons = new ArrayList<>();
+	
+	try (var conn = DBconnection.getConnection();
+			Statement statement = conn.createStatement()) {
+		try (ResultSet rs = statement.executeQuery(query)) {
+			while (rs.next()) {					
+				persons.add(FrameService.createPerson(rs));
+			}
+		};
+	}
+	catch(Exception e) {	
+	}
+	return persons;
+}
 
 public static void addRecordsIntoTable(ArrayList<ArrayList<String>> persons,DefaultTableModel tableModel) {
 	int index = 0;

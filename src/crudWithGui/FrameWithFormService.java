@@ -16,10 +16,11 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 public class FrameWithFormService {
 	
-public static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm, Optional<Person> person) {
+public static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm, Optional<Person> person, DefaultTableModel tableModel) {
 		
 		JPanel mainPanel = new JPanel();
 	 
@@ -55,8 +56,6 @@ public static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm, Optio
         	cityField.setText(personToUpdate.getCity());
         	emailField.setText(personToUpdate.getEmail());
         }
-        
-        
         
         JPanel submitButtonPanel = new JPanel();
       	 
@@ -95,6 +94,20 @@ public static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm, Optio
 	
 		backButton.addActionListener((e)->{
 			frameWithForm.setVisible(false);
+			//Empty fields when go back
+			
+			firstNameTextField.setText("");
+			lastNameTextField.setText("");
+			streetTextField.setText("");
+			housenumberField.setText("");
+			doornumberField.setText("");
+			zipField.setText("");
+			cityField.setText("");
+			emailField.setText("");
+			
+			ArrayList<ArrayList<String>> persons =  FrameService.getPersonsFromDataBase();
+			tableModel.setRowCount(0);
+			FrameService.addRecordsIntoTable(persons, tableModel);
 			frame.setVisible(true);
 		});
 		
@@ -109,8 +122,6 @@ public static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm, Optio
 			String zip = zipField.getText();
 			String city = cityField.getText();
 			String email = emailField.getText();
-			
-			
 			
 			if(person.isPresent()) {
 				
