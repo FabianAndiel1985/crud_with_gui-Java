@@ -119,7 +119,6 @@ public class Main {
 			};
 		}
 		catch(Exception e) {	
-		
 		}
 		
 		exportButton.addActionListener((e) -> {
