@@ -123,9 +123,9 @@ public static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm, Optio
 			String city = cityField.getText();
 			String email = emailField.getText();
 			
+			Person tempPerson = new Person(firstname,lastname,street,housenumber,doornumber,zip,city,email);
+			
 			if(person.isPresent()) {
-				
-				Person tempPerson = new Person(firstname,lastname,street,housenumber,doornumber,zip,city,email);
 				
 					if(person.get().continueEqualityCheck(tempPerson)) {
 						ArrayList<String> differentFields = person.get().getDifferentFields(tempPerson); 
@@ -165,7 +165,11 @@ public static JPanel createMainPanel ( JFrame frame, JFrame frameWithForm, Optio
 			
 			else {
 				String query = "INSERT INTO person (first_name, last_name, street, housenumber, doornumber, zip, city, email) VALUES (?, ?, ?, ?,?,?,?,?)";
-			
+					
+				if(!tempPerson.isValid()) {
+					return;
+				}
+				
 				try (var conn = DBconnection.getConnection();
 					PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 					preparedStatement.setString(1, firstname);

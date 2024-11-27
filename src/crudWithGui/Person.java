@@ -38,6 +38,11 @@ public class Person {
 		this.city = city;
 		this.email = email;
 	}
+		
+	public boolean isValid() {
+		return first_name != null && first_name.trim() != "" && last_name != null && last_name.trim() != "" && street != null && street.trim() != "" && housenumber != null &&  housenumber.trim() != "" &&
+			   doornumber != null && doornumber.trim() != "" && zip != null && zip.trim() != "" && city != null && city.trim() != "" && email != null && email.trim() != "";
+	}
 
 	@Override
 	public int hashCode() {
