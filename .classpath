@@ -16,6 +16,6 @@
 			<attribute name="maven.scope" value="provided"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/fabia/Downloads/mysql-connector-java-8.0.28.jar"/>
+	<classpathentry kind="lib" path="mysql-connector-java-8.0.28.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

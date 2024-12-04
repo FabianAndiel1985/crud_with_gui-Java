@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import javax.swing.BorderFactory;
@@ -50,11 +51,13 @@ public class Main {
 		JButton updateButton = FrameService.createButton("Update");
 		JButton deleteButton = FrameService.createButton("Delete");
 		JButton exportButton = FrameService.createButton("Export as CSV");
+		JButton exportAlphabeticallyButton = FrameService.createButton("Export as CSV (alphabetically)");
 		
 		frame.add(b);  
 		frame.add(updateButton);
 		frame.add(deleteButton);
 		frame.add(exportButton);
+		frame.add(exportAlphabeticallyButton);
 		
 		String[] columnNames = {"id","Firstname", "Lastname","Street","Housenumber","Doornumber","Zip","City","Email"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0){
@@ -115,6 +118,15 @@ public class Main {
 		}
 		);
 		
+		exportAlphabeticallyButton.addActionListener((e) -> {
+			if(persons.isEmpty()) {
+				return;
+			}
+			List<ArrayList<String>> personsSorted = persons.stream().sorted( (ArrayList<String> o1, ArrayList<String> o2) -> o1.get(2).compareTo(o2.get(2))).toList();
+			
+			FrameService.exportToFile(persons);
+		});
+		
 	        TableColumn idColumn = table.getColumnModel().getColumn(0);
 	        table.getColumnModel().removeColumn(idColumn);
 
@@ -124,5 +136,17 @@ public class Main {
 	        FrameService.addRecordsIntoTable(persons,tableModel);
 	        frame.setVisible(true);
 	}
+	
+	
+	
+	   public static void printNestedArrayList(List<ArrayList<String>> persons) {
+	        for (int i = 0; i < persons.size(); i++) {
+	            System.out.println("Person " + (i + 1) + ":");
+	            ArrayList<String> person = persons.get(i);
+	            for (int j = 0; j < person.size(); j++) {
+	                System.out.println("  Attribute " + (j) + ": " + person.get(j));
+	            }
+	        }
+	    }
 			
 }
