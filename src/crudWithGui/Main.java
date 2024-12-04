@@ -37,7 +37,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-
 public class Main {
 	
 	public static void main(String[] args) {
@@ -111,7 +110,7 @@ public class Main {
 		
 		
 		ArrayList<ArrayList<String>> persons = FrameService.getPersonsFromDataBase();
-		
+				
 		exportButton.addActionListener((e) -> {
 			if(persons.isEmpty()) {
 				return;
