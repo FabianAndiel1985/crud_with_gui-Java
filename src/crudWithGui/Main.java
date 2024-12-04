@@ -50,14 +50,16 @@ public class Main {
 		JButton b = FrameService.createButton("Enter new person");
 		JButton updateButton = FrameService.createButton("Update");
 		JButton deleteButton = FrameService.createButton("Delete");
-		JButton exportButton = FrameService.createButton("Export as CSV");
-		JButton exportAlphabeticallyButton = FrameService.createButton("Export as CSV (alphabetically)");
+		JButton exportButton = FrameService.createButton("Export as txt");
+		JButton exportAlphabeticallyButton = FrameService.createButton("Export as txt (alphabetically)");
+		JButton importFromFileButton = FrameService.createButton("Import from txt");
 		
 		frame.add(b);  
 		frame.add(updateButton);
 		frame.add(deleteButton);
 		frame.add(exportButton);
 		frame.add(exportAlphabeticallyButton);
+		frame.add(importFromFileButton);
 		
 		String[] columnNames = {"id","Firstname", "Lastname","Street","Housenumber","Doornumber","Zip","City","Email"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0){
@@ -123,9 +125,13 @@ public class Main {
 				return;
 			}
 			List<ArrayList<String>> personsSorted = persons.stream().sorted( (ArrayList<String> o1, ArrayList<String> o2) -> o1.get(2).compareTo(o2.get(2))).toList();
-			
 			FrameService.exportToFile(persons);
 		});
+		
+		importFromFileButton.addActionListener(
+				(e)->{
+					FrameService.importFromFile();
+				});
 		
 	        TableColumn idColumn = table.getColumnModel().getColumn(0);
 	        table.getColumnModel().removeColumn(idColumn);
@@ -135,18 +141,5 @@ public class Main {
 	        
 	        FrameService.addRecordsIntoTable(persons,tableModel);
 	        frame.setVisible(true);
-	}
-	
-	
-	
-	   public static void printNestedArrayList(List<ArrayList<String>> persons) {
-	        for (int i = 0; i < persons.size(); i++) {
-	            System.out.println("Person " + (i + 1) + ":");
-	            ArrayList<String> person = persons.get(i);
-	            for (int j = 0; j < person.size(); j++) {
-	                System.out.println("  Attribute " + (j) + ": " + person.get(j));
-	            }
-	        }
-	    }
-			
+	}		
 }

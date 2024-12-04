@@ -1,7 +1,9 @@
 package crudWithGui;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,6 +83,45 @@ public static void addRecordsIntoTable(ArrayList<ArrayList<String>> persons,Defa
 			System.out.println(e1.getMessage());
 		}
 	}
+	
+	
+	public static void importFromFile() {
+		//creates the path object representing a path
+		Path folderPath = Paths.get("src/import");
+		//creates whole path for the file
+		Path pathOfFile = folderPath.resolve("import.txt");
+		
+		try {
+			if(!Files.exists(folderPath)) {
+				throw new Exception("The required import folder doesn't exist");
+			}
+			if(!Files.exists(pathOfFile)) {
+				throw new Exception("The required import txt file doesn't exist");
+			}
+			
+			byte[] fileBytes = Files.readAllBytes(pathOfFile);
+			
+			//-----------
+			
+			 try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(fileBytes))) {
+	    
+	                ArrayList<ArrayList<String>> persons = (ArrayList<ArrayList<String>>) ois.readObject();
+	                
+	                for (ArrayList<String> person : persons) {
+	                    System.out.println(person);
+	                }
+	            }
+	         catch (IOException | ClassNotFoundException e) {
+	            e.printStackTrace();
+	        }
+		
+		}
+		catch (Exception e1) {
+			System.out.println(e1.getMessage());
+		}
+	}
+	
+	
 	
 	private static byte[] toBytes(ArrayList<ArrayList<String>> list) throws IOException {
 	        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
